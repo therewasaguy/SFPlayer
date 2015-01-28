@@ -1,0 +1,10 @@
+{
+  "name": "openmusic-SFPlayer",
+  "version": "0.0.1",
+  "description": "test",
+  "main": "SoundFilePlayer.js",
+  "dependencies": {
+    "gulp": "*",
+    "openmusic-demo-gulp-tasks": "^1.2.0"
+  }
+}
