@@ -3,8 +3,8 @@ var ac = new AudioContext();
 var sf = new SFPlayer(ac);
 var playerSkin;
 
-// sf.load('audio/mouth-rhythm.wav', songLoaded);
-sf.load('audio/BOPD_-_21205_elevator.mp3', songLoaded);
+sf.load('audio/mouth-rhythm.wav', songLoaded);
+// sf.load('audio/BOPD_-_21205_elevator.mp3', songLoaded);
 
 var playerDiv;
 
@@ -30,8 +30,13 @@ function logTheTime(){
 }
 
 function scheduleEvents() {
+  sf.onended(stopPlaying);
   sf.addEventAtTime(1, logTheTime);
   sf.addEventAtTime(2, logTheTime);
   sf.addEventAtTime(3, logTheTime);
   sf.addEventAtTime(4, logTheTime);
+}
+
+function stopPlaying() {
+  sf.stop();
 }

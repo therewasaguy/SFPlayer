@@ -36,9 +36,13 @@ function SFPlayer(ac) {
     var when_ = when || ac.currentTime;
     var offset_ = offset || 0;
     var duration_ = duration || (buffer.duration - offset_);
+
+    garbageDump(when);
     initBufferSource();
+
     bufferSource.start(when_, offset_, duration_);
     counterSource.start(when_, offset_, duration_);
+    scriptNode.connect(ac.destination);
   };
 
   node.pause = function(when) {
@@ -55,10 +59,7 @@ function SFPlayer(ac) {
     counterSource.stop(when);
 
     // garbage!
-    counterSource.disconnect();
-    counterSource = null;
-    bufferSource.disconnect();
-    bufferSource = null;
+    garbageDump(when);
   };
 
   node.load = function(src, callback) {
@@ -132,8 +133,6 @@ function SFPlayer(ac) {
     bufferLength = audioBuf.length;
     counterBuffer = audioBuf;
   }
-
-  scriptNode.connect(ac.destination);
 
   scriptNode.onaudioprocess = function savePosition( processEvent ) {
     // if pausePos === 0 then the song is playing
@@ -217,6 +216,25 @@ function SFPlayer(ac) {
     // });
 
     node.rate = bufferSource.playbackRate;
+  }
+
+  // this can be scheduled on JS clock...TO DO: schedule a callback on AudioContext time.
+  function garbageDump(when) {
+    if (when) {
+      setTimeout(dump, when * 1000);
+    } else {
+      dump();
+    }
+  }
+
+  function dump() {
+    if (counterSource) {
+      counterSource.disconnect();
+      counterSource = null;
+      bufferSource.disconnect();
+      bufferSource = null;
+      scriptNode.disconnect();
+    }
   }
 
   return node;
