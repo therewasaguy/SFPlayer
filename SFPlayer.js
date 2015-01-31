@@ -40,6 +40,8 @@ function SFPlayer(ac) {
     garbageDump(when);
     initBufferSource();
 
+    bufferSource.playbackRate.setValueAtTime(0.5, when_);
+    counterSource.playbackRate.setValueAtTime(0.5, when_);
     bufferSource.start(when_, offset_, duration_);
     counterSource.start(when_, offset_, duration_);
     scriptNode.connect(ac.destination);
@@ -165,23 +167,23 @@ function SFPlayer(ac) {
     bufferSource.onended = callback;
   }
 
-  node.addEventAtTime = function(time, callback) {
+  node.addEventAtTime = function(time, callback, params) {
     // convert time to samples by using time/duration to get percentage
     var sample = time/buffer.duration * bufferLength;
     console.log(sample);
-    node.addEventAtSample(sample, callback);
+    node.addEventAtSample(sample, callback, params);
   };
 
-  node.addEventAtSample = function(sample, callback) {
+  node.addEventAtSample = function(sample, callback, params) {
     eventCallbackSamples.push(sample);
-    eventCallbackFunctions.push(callback)
+    eventCallbackFunctions.push({'callback': callback, 'params': params});
     findNextEvent();
   };
 
   function fireEvents() {
     if ( (nextEventSample + samplesPerBuffer) < lastPos) {
-      console.log('now firing sample ' + nextEventSample + ' because last pos is ' + lastPos);
-      nextEventFunction();
+      // console.log('now firing sample ' + nextEventSample + ' because last pos is ' + lastPos); // debugging
+      nextEventFunction.callback(nextEventFunction.params);
       // remove event from the array
       eventCallbackSamples.splice(nextEventIndex, 1);
       eventCallbackFunctions.splice(nextEventIndex, 1);
